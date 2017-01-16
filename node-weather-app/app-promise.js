@@ -5,6 +5,9 @@ const geocode = require('./geocode/geocode');
 const forecast = require('./forecast/forecast');
 const axios = require('axios');
 
+//exec allows for bash commands to be used in node
+//output buffer is passed to callback function as an argument
+//error and errorMessage also passed should they exist
 const exec = require('child_process').exec;
 const cmd = './bin/whereami'
 
