@@ -16,7 +16,8 @@ const argv = yargs
 			demand: true,
 			alias: 'address',
 			describe: 'Address to fetch weather for',
-			string: true
+			string: true,
+			default: process.env.HOME_ADDRESS
 		}
 	}).help()
 	.alias('help', 'h')
@@ -36,10 +37,15 @@ axios.get(geocodeURL).then((geocodeRes) => {
 		console.log(`Retreiving tempertature for ${formattedAddress}...`);
 		return axios.get(weatherURL);
 	}
-}).then((weatherRes) =>{
+}).then((weatherRes) => {
 	debugger;
 	if(weatherRes.status === 200){
-		console.log(`It's currently ${weatherRes.data.currently.temperature}. It feels like ${weatherRes.data.currently.apparentTemperature}.`);
+		console.log("Here's the weekly forecast");
+		console.log('');
+		weatherRes.data.daily.data.forEach((day) => {
+			outputTemperature(day);
+		});
+		console.log('===================================================');
 	} else {
 		throw new Error("Unable to connect to forecast.io");
 	}
@@ -50,3 +56,11 @@ axios.get(geocodeURL).then((geocodeRes) => {
 		console.log(error.message);
 	}
 });
+
+outputTemperature = (day) => {
+	console.log('===================================================');
+	console.log(new Date(day.time * 1000).toDateString());
+	console.log(`Summary: ${day.summary}`);
+	console.log(`High: ${day.temperatureMax} | Feels like ${day.apparentTemperatureMax}`);
+	console.log(`Low: ${day.temperatureMin} | Feels like ${day.apparentTemperatureMin}`);
+}
