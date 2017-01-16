@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">	
+	<meta charset="utf-8">
 	<title> Help Page</title>
 </head>
 <body>
 	<div>
+		<!-- to use a partial, simply use the double curly brace
+		to signify partial to use, use '>' followed by partial name -->
 		{{>header}}
+
+		<!-- to use a registered helper method, state method name in curly braces
+		to pass in argments simple list them after method name (space seperated) -->
 		<h2>{{screamIt welcomeMsg}}</h2>
+		
 		<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
 		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
 		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo

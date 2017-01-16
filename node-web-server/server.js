@@ -3,9 +3,12 @@ const hbs = require('hbs');
 
 let app = express();
 
+//you can regiter partial directory using registerPartials()
+//argument - filepath to directory
 hbs.registerPartials(__dirname + '/views/partials');
 
 //app.set allows you to set up express config
+//here we're setting up the view engine to work with hbs
 app.set('view engine', 'hbs');
 
 //app.use allows you to utilize middleware
