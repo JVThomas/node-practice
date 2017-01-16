@@ -80,7 +80,6 @@ function outputTemperature(day) {
 }
 
 function processGeocode() {
-	let output = '';
 	return new Promise((resolve, reject) => {
 		exec(cmd, (error, stdout, stderror) => {
 			if(!error){
