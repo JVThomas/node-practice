@@ -1,5 +1,6 @@
 const express = require('express');
 const hbs = require('hbs');
+const fs = require('fs');
 
 let app = express();
 
@@ -11,10 +12,38 @@ hbs.registerPartials(__dirname + '/views/partials');
 //here we're setting up the view engine to work with hbs
 app.set('view engine', 'hbs');
 
-//app.use allows you to utilize middleware
-app.use(express.static(__dirname + '/public'))
-//express.static allows you to use the absolute path to asset
+//we can use app.use to set up our own middleware
+app.use((req, res, next) => {
+	let now = new Date().toString();
+	//using the request object we can access request details
+	let log = `${now}: ${req.method} ${req.url}`
+	console.log(log);
+
+	//example use of creating a logger to keep track of requests made
+	//using fs.appendFile once again
+	//note three arguments, file name, string, and error callback
+	fs.appendFile('server.log', log + '\n', (err) => {
+		if (err){
+			console.log('Unable to append to server.log');
+		}
+	});
+	//next exists so you can tell express when middleware is done
+	//application will only move on when next() is called
+	next();
+});
+
+//sometimes you don't want to call next, like when a page is under maintenance
+//you can create middleware to prevent routes from rendering their views
+// app.use((req, res, next) => {
+// 	res.render('maintenance.hbs');
+// });
+
+//express.static allows you to use the absolute path to assets
 //__dirname stores path to project dir
+//note: Express executes middleware in the order its used
+//if we set up the templates before the maintenance middleware...
+//we'd be able to bypass the maintenance page by directly accessing the .html pages
+app.use(express.static(__dirname + '/public'));
 
 //takes two arguments, the name of the helper, and the function it calls
 //to use, simple reference the name in curly braces wihtin template
