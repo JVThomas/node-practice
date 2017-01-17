@@ -9,7 +9,27 @@ describe('add()', function() {
       .toBe(44, `expected ${res} to be 44`)
       .toBeA('number');
   });
+});
 
+describe('asyncAdd()', function() {
+  it('should add two nums asynchronously', function(done) {
+    utils.asyncAdd(4,3,(sum)=>{
+      expect(sum).toBe(7).toBeA('number');
+      //use done for async tests
+      //test will not complete until done callback is called
+      //good way to ensure assertions are run
+      done();
+    });
+  });
+});
+
+describe('asyncSquare', function() {
+  it('asynchrounously squares a number', function(done) {
+    utils.asyncSquare(3, (res) => {
+      expect(res).toBe(9).toBeA('number');
+      done();
+    });
+  });
 });
 
 describe('square()', function() {
@@ -20,29 +40,30 @@ describe('square()', function() {
       .toBeA('number');
   });
 });
+describe('object tests', function() {
+  it('should expect some values', function() {
+    //use toEqual to compare objects
+    expect({name: 'John Doe'}).toEqual({name:'John Doe'});
 
-it('should expect some values', function() {
-  //use toEqual to compare objects
-  expect({name: 'John Doe'}).toEqual({name:'John Doe'});
+    //use toInclude to see if value is present in array
+    expect([2,3,4]).toInclude(2);
+    expect([2,3,4]).toExclude(5);
 
-  //use toInclude to see if value is present in array
-  expect([2,3,4]).toInclude(2);
-  expect([2,3,4]).toExclude(5);
+    //can be used for obj as well
+    expect({
+      name: 'john doe',
+      age: 25
+    }).toInclude({age:25})
+    .toExclude({name: 'John Smith'});
+  });
 
-  //can be used for obj as well
-  expect({
-    name: 'john doe',
-    age: 25
-  }).toInclude({age:25})
-  .toExclude({name: 'John Smith'});
-});
-
-describe('setName()', function() {
-  it('should split the name string and set the first and last names', function() {
-    let userObj = {age: 25}
-    expect(utils.setName(userObj,"John Doe"))
-      .toInclude({firstName: 'John'})
-      .toInclude({lastName: 'Doe'})
-      .toBe(userObj);
+  describe('setName()', function() {
+    it('should split the name string and set the first and last names', function() {
+      let userObj = {age: 25}
+      expect(utils.setName(userObj,"John Doe"))
+        .toInclude({firstName: 'John'})
+        .toInclude({lastName: 'Doe'})
+        .toBe(userObj);
+    });
   });
 });
