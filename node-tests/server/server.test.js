@@ -3,7 +3,7 @@ const app = require('./server').app;
 //supertest has flexibility with expect
 const expect = require('expect');
 
-describe('test server', function() {
+describe('/', function() {
   it('should return page not found', function(done) {
     request(app)
       .get('/')
@@ -12,6 +12,8 @@ describe('test server', function() {
         expect(res.body).toInclude({error: 'Page not found'});
       }).end(done);
   });
+});
+describe('/users', function(){
   it('should return users from the users route', function(done) {
     request(app)
       .get('/users')
