@@ -2,6 +2,8 @@ const express = require('express');
 const hbs = require('hbs');
 const fs = require('fs');
 
+const port = process.env.PORT || 3000;
+
 let app = express();
 
 //you can regiter partial directory using registerPartials()
@@ -88,5 +90,5 @@ app.get('/bad', (req, res) => {
 //note: app.listen takes a second argument (optional)
 //see below for example
 app.listen(3000, () => {
-	console.log('Server is up on port 3000');
+	console.log(`Server is up on port ${port}`);
 });
