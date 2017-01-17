@@ -11,6 +11,8 @@ describe('App', function() {
   }
   //we can then set the method within the file with our mocked method
   app.__set__('db', db);
+
+  //basic example of using spies
   it('should call the spy correctly', function(done) {
     let spy = expect.createSpy();
     spy('John', 25);
@@ -18,10 +20,13 @@ describe('App', function() {
     done();
   });
 
+  //example of using spies in conjuction with rewire
   it('should call saveUser with user object', function(done) {
     let email = 'abc@gmail.com';
     let password = 'test123';
+    //here app is calling handleSignup, which was mocked with our spy...
     app.handleSignup(email, password);
+    //...allowing us to use toHaveBeenCalledWith to check arguments!
     expect(db.saveUser).toHaveBeenCalledWith({email, password});
     done();
   });
