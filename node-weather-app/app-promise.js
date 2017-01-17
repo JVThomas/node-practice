@@ -29,46 +29,31 @@ const argv = yargs
   .alias('help', 'h')
   .argv;
 
+///////////////MAIN PROCESS FLOW///////////////////////////////
 
 if(!argv.address){
   processGeocode()
-  .then((resp) => forecastAnalysis(resp))
-  .catch((error) => console.log(error));
+    .then((resp) => forecastAnalysis(resp))
+    .catch((error) => {
+      console.log(error)
+    });
 } else {
   encodedURL = generateAddressURL(process.env.HOME_ADDRESS);
-  forecastAnalysis(encodedURL);
+  forecastAnalysis(encodedURL)
 }
 
+/////////////////HELPER METHODS////////////////////////////////
+
 function forecastAnalysis (geocodeURL) {
-  axios.get(geocodeURL).then((geocodeRes) => {
-    if (geocodeRes.data.status === 'ZERO_RESULTS'){
-      throw new Error("Address not found");
-    } else {
-      let formattedAddress = geocodeRes.data.results[0].formatted_address;
-      let latitude = geocodeRes.data.results[0].geometry.location.lat
-      let longitude = geocodeRes.data.results[0].geometry.location.lng
-      let weatherURL = `https://api.darksky.net/forecast/${FORECAST_KEY}/${latitude},${longitude}`
-      console.log(`Retreiving tempertature for ${formattedAddress}...`);
-      return axios.get(weatherURL);
-    }
-  }).then((weatherRes) => {
-    if(weatherRes.status === 200){
-      console.log("Here's the weekly forecast");
-      console.log('');
-      weatherRes.data.daily.data.forEach((day) => {
-        outputTemperature(day);
-      });
-      console.log('===================================================');
-    } else {
-      throw new Error("Unable to connect to forecast.io");
-    }
-  }).catch((error) => {
-    if(error.code === 'ENOTFOUND'){
-      console.log('Unable to connect to API');
-    } else {
-      console.log(error.message);
-    }
-  });
+  googleMapsReq(geocodeURL)
+    .then((weatherRes) => forecastIoAnalysis(weatherRes))
+    .catch((error) => {
+      if(error.code === 'ENOTFOUND'){
+        console.log('Unable to connect to API');
+      } else {
+        console.log(error.message);
+      }
+    });
 }
 
 function outputTemperature(day) {
@@ -89,7 +74,7 @@ function processGeocode() {
           }
         });
         resolve (`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coordinates[0]},${coordinates[1]}`);
-      } else if (process.env.HOME_ADDRESS !== undefined) { 
+      } else if (process.env.HOME_ADDRESS !== undefined) {
         resolve (generateAddressURL(process.env.HOME_ADDRESS));
       } else {
         reject('You have no default address saved in .env file.');
@@ -98,7 +83,35 @@ function processGeocode() {
   });
 }
 
+function googleMapsReq(geocodeURL){
+  return axios.get(geocodeURL).then((geocodeRes) => {
+    if (geocodeRes.data.status === 'ZERO_RESULTS'){
+      throw new Error("Address not found");
+    } else {
+      let formattedAddress = geocodeRes.data.results[0].formatted_address;
+      let latitude = geocodeRes.data.results[0].geometry.location.lat
+      let longitude = geocodeRes.data.results[0].geometry.location.lng
+      let weatherURL = `https://api.darksky.net/forecast/${FORECAST_KEY}/${latitude},${longitude}`
+      console.log(`Retreiving tempertature for ${formattedAddress}...`);
+      return axios.get(weatherURL);
+    }
+  });
+}
+
+function forecastIoAnalysis(weatherRes){
+  if(weatherRes.status === 200){
+    console.log("Here's the weekly forecast");
+    console.log('');
+    weatherRes.data.daily.data.forEach((day) => {
+      outputTemperature(day);
+    });
+    console.log('===================================================');
+  } else {
+    throw new Error("Unable to connect to forecast.io");
+  }
+}
+
 function generateAddressURL(address) {
-  let encodedAddress = encodeURIComponent(argv.address);
+  let encodedAddress = encodeURIComponent(address);
   return `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}`;
 }
