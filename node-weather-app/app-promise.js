@@ -34,9 +34,7 @@ const argv = yargs
 if(!argv.address && !process.env.HOME_ADDRESS){
   processGeocode()
     .then((resp) => forecastAnalysis(resp))
-    .catch((error) => {
-      console.log(error)
-  });
+    .catch((error) => console.log(error));
 } else {
   address = argv.address || process.env.HOME_ADDRESS;
   encodedURL = generateAddressURL(address);
