@@ -32,8 +32,8 @@ const argv = yargs
 ///////////////MAIN PROCESS FLOW///////////////////////////////
 
 if(argv.address || process.env.HOME_ADDRESS){
-  address = argv.address || process.env.HOME_ADDRESS;
-  encodedURL = generateAddressURL(address);
+  let address = argv.address || process.env.HOME_ADDRESS;
+  let encodedURL = generateAddressURL(address);
   forecastAnalysis(encodedURL);
 } else {
   processGeocode()
