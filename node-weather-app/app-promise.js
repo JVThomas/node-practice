@@ -31,17 +31,17 @@ const argv = yargs
 
 ///////////////MAIN PROCESS FLOW///////////////////////////////
 
-if(!argv.address){
+if(!argv.address && !process.env.HOME_ADDRESS){
   processGeocode()
     .then((resp) => forecastAnalysis(resp))
     .catch((error) => {
       console.log(error)
-    });
+  });
 } else {
-  encodedURL = generateAddressURL(process.env.HOME_ADDRESS);
-  forecastAnalysis(encodedURL)
+  address = argv.address || process.env.HOME_ADDRESS;
+  encodedURL = generateAddressURL(address);
+  forecastAnalysis(encodedURL);
 }
-
 /////////////////HELPER METHODS////////////////////////////////
 
 function forecastAnalysis (geocodeURL) {
