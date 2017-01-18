@@ -31,14 +31,14 @@ const argv = yargs
 
 ///////////////MAIN PROCESS FLOW///////////////////////////////
 
-if(!argv.address && !process.env.HOME_ADDRESS){
-  processGeocode()
-    .then((resp) => forecastAnalysis(resp))
-    .catch((error) => console.log(error));
-} else {
+if(argv.address || process.env.HOME_ADDRESS){
   address = argv.address || process.env.HOME_ADDRESS;
   encodedURL = generateAddressURL(address);
   forecastAnalysis(encodedURL);
+} else {
+  processGeocode()
+    .then((resp) => forecastAnalysis(resp))
+    .catch((error) => console.log(error));
 }
 /////////////////HELPER METHODS////////////////////////////////
 
@@ -90,7 +90,7 @@ function googleMapsReq(geocodeURL){
       let latitude = geocodeRes.data.results[0].geometry.location.lat
       let longitude = geocodeRes.data.results[0].geometry.location.lng
       let weatherURL = `https://api.darksky.net/forecast/${FORECAST_KEY}/${latitude},${longitude}`
-      console.log(`Retreiving tempertature for ${formattedAddress}...`);
+      console.log(`\nRetreiving tempertature for ${formattedAddress}...`);
       return axios.get(weatherURL);
     }
   });
