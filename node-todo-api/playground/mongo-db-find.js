@@ -30,7 +30,21 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (error, db) =>{
   //   }).catch((error) => console.log('Unable to fetch docs', error));
   //  //db.close(); //closes MongoDB connection
 
-   db.collection('Users').find({name:'John Doe'}).toArray()
-    .then((docs) => console.log(JSON.stringify(docs, undefined, 2)))
+  // db.collection('Users').insertOne({
+  //   name: 'Rick Ross',
+  //   age: 45,
+  //   location: 'Miami,FL'
+  // }, (err, result) => {
+  //   if (err){
+  //     return console.log('Failed to save user', err);
+  //   }
+  //   console.log(new ObjectID(result.ops._id));
+  // });
+
+   db.collection('Users').find({name: 'Rick Ross'}).toArray()
+    .then((docs) => {
+      console.log(JSON.stringify(docs[0], undefined, 2));
+      console.log(`Timestamp: ${new ObjectID(docs[0]._id).getTimestamp()}`);
+    })
     .catch((err) => console.log('Unable to fetch User documents', err));
 });
