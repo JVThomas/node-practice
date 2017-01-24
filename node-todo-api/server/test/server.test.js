@@ -71,7 +71,7 @@ describe('POST /todos', function() {
           Todo.find({}).then((todos) => {
             expect(todos.length).toBe(3);
             done();
-          }).catch((e) => done(e));
+          }, (e) => done(e));
         }
       });
   });
@@ -101,7 +101,7 @@ describe('GET /todos/:id', function() {
       })
       .end(done);
   });
-  
+
   it('sends a 404 response when id is invalid', function(done) {
     request(app)
       .get('/todos/${todos[0]._id}kj54kj')
