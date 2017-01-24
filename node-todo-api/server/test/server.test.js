@@ -131,3 +131,55 @@ describe('GET /todos/:id', function() {
         });
   });
 });
+
+describe('DELETE todos/:id', function() {
+  it('deletes a todo object based on id', function(done) {
+    let id = todos[0]._id.toHexString();
+
+    request(app)
+      .delete(`/todos/${id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo._id).toBe(id);
+      })
+      .end((err, res) => {
+        if(err){
+          return done(err);
+        }
+
+        Todo.findById(id).then((todo) => {
+          expect(todo).toNotExist();
+          done();
+        }).catch(e => done(e));
+      });
+  });
+
+  it('returns a 404 if id does not exist', function(done) {
+    let id = new ObjectID().toHexString();
+
+    request(app)
+      .delete(`/todos/${id}`)
+      .expect(404)
+      .end((err, res) => {
+        if(err){
+          done(err)
+        }
+        expect(res.error.text).toBe('ID does not exist');
+        done();
+      });
+  });
+  it('returns a 404 if id is note valid', function(done) {
+    let id = 'asdsds';
+
+    request(app)
+      .delete(`/todos/${id}`)
+      .expect(404)
+      .end((err,res) => {
+        if(err){
+          done(err);
+        }
+        expect(res.error.text).toBe('Invalid ID');
+        done();
+      });
+  });
+});
