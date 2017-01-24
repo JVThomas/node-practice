@@ -1,4 +1,5 @@
 const express = require('express');
+const _ = require('lodash');
 const bodyParser = require('body-parser');
 
 const {mongoose} = require('./db/mongoose');
@@ -67,6 +68,34 @@ app.delete('/todos/:id', (req, res) => {
         res.status(400).send('Unable to query DB', error);
       });
   }
+});
+
+app.patch('/todos/:id', (req,res) => {
+  let id = req.params.id;
+  //body variable used to check for paramters that should not be passed in
+  //use _.pick to pass in valid attrs to body
+  let body = _.pick(req.body, ['text', 'completed']);
+
+  if(!ObjectID.isValid(id)){
+    return res.status(404).send('Invalid ID');
+  }
+
+  if(_isBoolean(body.completed) && body.completed){
+    body.completedAt = new Date().getTime(); //returns js timestamp
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  //this operates like the MongoDB driver version, though with minor changes
+  Todo.findByIdAndUpdate(id, {$set:body}, {new: true}).then((todo) => {
+    if(!todo){
+      return res.status(404).send('ID does not exist');
+    }
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
 });
 
 app.listen(port, () => console.log(`Started on port ${port}`));
