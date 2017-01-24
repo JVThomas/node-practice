@@ -80,7 +80,7 @@ app.patch('/todos/:id', (req,res) => {
     return res.status(404).send('Invalid ID');
   }
 
-  if(_isBoolean(body.completed) && body.completed){
+  if(_.isBoolean(body.completed) && body.completed){
     body.completedAt = new Date().getTime(); //returns js timestamp
   } else {
     body.completed = false;
