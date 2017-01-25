@@ -3,6 +3,7 @@ require('./config/config');
 const express = require('express');
 const _ = require('lodash');
 const bodyParser = require('body-parser');
+const dotenv = require('dotenv').config();
 
 const {mongoose} = require('./db/mongoose');
 const{ObjectID} = require('mongodb');
@@ -96,6 +97,20 @@ app.patch('/todos/:id', (req,res) => {
       return res.status(404).send('ID does not exist');
     }
     res.send({todo});
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
+app.post('/users', (req, res) => {
+  console.log(req.body);
+  let userParams = _.pick(req.body, ['email', 'password']);
+  let user = new User(userParams);
+
+  user.save().then(() => {
+      return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
   }).catch((e) => {
     res.status(400).send(e);
   });
