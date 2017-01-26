@@ -1,16 +1,33 @@
 //const {SHA256} = require('crypto-js');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
-let data = {
-  id: 4
-}
+let password = 'abc123';
 
-let token = jwt.sign(data, '123abc');
-console.log(token);
+//first argument is the number of rounds, second is callback
+//for password hashing, longer tends to be more secure
+// bcrypt.genSalt(10, (err, salt) => {
+//   bcrypt.hash(password, salt, (err, hash) => {
+//     console.log(hash);
+//   });
+// });
+//
+let hashedPassword = '$2a$10$sa456/FTBvnbelS62JEG2.HxCrPleg9OExc670rWlC9cVZxBEYR9O';
 
-//jwt throws error if the signature is invalid
-let decoded = jwt.verify(token, '123abc');
-console.log('Decoded: ', decoded);
+//takes the plain value and the hash value and checks if they're equal
+bcrypt.compare(password, hashedPassword, (err, res) =>{
+  console.log(res);
+});
+// let data = {
+//   id: 4
+// }
+//
+// let token = jwt.sign(data, '123abc');
+// console.log(token);
+//
+// //jwt throws error if the signature is invalid
+// let decoded = jwt.verify(token, '123abc');
+// console.log('Decoded: ', decoded);
 
 
 // let msg = "I am User # 45";

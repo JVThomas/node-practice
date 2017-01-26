@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
@@ -32,6 +33,14 @@ let UserSchema = new mongoose.Schema({
   }],
 });
 
+//override toJSON method to lock out sensitive materials for return
+UserSchema.methods.toJSON = function () {
+  let user = this;
+  let userObj = user.toObject();
+
+  return _.pick(userObj, ['_id', 'email']);
+}
+
 //used old function notation to have access to this
 UserSchema.methods.generateAuthToken = function () {
   let user = this;
@@ -63,13 +72,24 @@ UserSchema.statics.findByToken = function(token) {
   });
 }
 
-//override toJSON method to lock out sensitive materials for return
-UserSchema.methods.toJSON = function () {
+//pre executes code before an event
+//in this instance, its executing block before every save to hash password
+UserSchema.pre('save', function(next){
   let user = this;
-  let userObj = user.toObject();
 
-  return _.pick(userObj, ['_id', 'email']);
-}
+  //isModified checks a property to see if its modified
+  if(user.isModified('password')){
+    //if it is, use bcrypt to save a new hashed password
+    bcrypt.genSalt(12, (err, salt) => {
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        user.password = hash;
+        next();
+      });
+    });
+  } else {
+    next();
+  }
+});
 
 let User = mongoose.model('User', UserSchema);
 
