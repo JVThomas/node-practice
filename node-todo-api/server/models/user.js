@@ -80,7 +80,7 @@ UserSchema.pre('save', function(next){
   //isModified checks a property to see if its modified
   if(user.isModified('password')){
     //if it is, use bcrypt to save a new hashed password
-    bcrypt.genSalt(12, (err, salt) => {
+    bcrypt.genSalt(11, (err, salt) => {
       bcrypt.hash(user.password, salt, (err, hash) => {
         user.password = hash;
         next();

@@ -1,3 +1,4 @@
+const {todos, populateTodos, users, populateUsers} = require('./seed/seed');
 const expect = require('expect');
 const request = require('supertest');
 
@@ -5,29 +6,8 @@ const {ObjectID} = require('mongodb');
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 
-let todos = [
-  {text:'one',
-  _id: new ObjectID()
-  },
-  {
-    text: 'two',
-    _id: new ObjectID(),
-    completed: true,
-    completedAt: 123
-  },
-  {
-    text: 'three',
-    _id: new ObjectID()
-  }
-];
-
-beforeEach((done) => {
-  //this will empty db before each test
-  Todo.remove({}).then(() => {
-    //insertMany lets you save more than one doc
-    return Todo.insertMany(todos);
-  }).then(() => done());
-});
+beforeEach(populateUsers);
+beforeEach(populateTodos);
 
 describe('POST /todos', function() {
   it('creates a new todo', function(done) {
