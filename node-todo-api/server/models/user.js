@@ -41,23 +41,23 @@ UserSchema.methods.toJSON = function () {
   return _.pick(userObj, ['_id', 'email']);
 }
 
+//method to geneate auth token on user creation
 //used old function notation to have access to this
 UserSchema.methods.generateAuthToken = function () {
   let user = this;
   let access = 'auth';
 
   let token = jwt.sign({_id: user._id.toHexString(), access}, process.env.TODO_SECRET).toString();
-
   user.tokens.push({access, token});
-
   return user.save().then(() => token);
 }
 
+//statics keyword used to denote model method
 UserSchema.statics.findByToken = function(token) {
   let User = this;
   let decoded;
 
-  //used try catch to atch errors thrown by jwt library
+  //used try-catch block to catch errors thrown by jwt library
   try {
     decoded = jwt.verify(token,process.env.TODO_SECRET);
   } catch (e) {
@@ -73,7 +73,7 @@ UserSchema.statics.findByToken = function(token) {
 }
 
 //pre executes code before an event
-//in this instance, its executing block before every save to hash password
+//in this instance we're hashing the password before every save (if modified)
 UserSchema.pre('save', function(next){
   let user = this;
 
