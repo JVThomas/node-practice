@@ -44,6 +44,26 @@ UserSchema.methods.generateAuthToken = function () {
   return user.save().then(() => token);
 }
 
+UserSchema.statics.findByToken = function(token) {
+  let User = this;
+  let decoded;
+
+  //used try catch to atch errors thrown by jwt library
+  try {
+    decoded = jwt.verify(token,process.env.TODO_SECRET);
+  } catch (e) {
+    return Promise.reject();
+  }
+
+  //use quotes when dealing with nested attributes
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
+}
+
+//override toJSON method to lock out sensitive materials for return
 UserSchema.methods.toJSON = function () {
   let user = this;
   let userObj = user.toObject();
