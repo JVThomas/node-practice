@@ -5,6 +5,7 @@ const request = require('supertest');
 const {ObjectID} = require('mongodb');
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
+const {User} = require('./../models/user');
 
 beforeEach(populateUsers);
 beforeEach(populateTodos);
@@ -248,6 +249,40 @@ describe('PATCH /todos/:id', function() {
         }
         expect(res.error.text).toBe('ID does not exist');
         done();
+      });
+  });
+});
+
+describe('POST /users', function() {
+  let email = 'testing@test.com';
+  let password = 'password';
+  let userID;
+  let token;
+
+  it('creates a new user with email and password attributes', function(done) {
+    request(app)
+      .post('/users')
+      .send({email, password})
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.email).toBe('testing@test.com');
+        userID = res.body._id;
+        console.log(res.header);
+        token = res.header['x-auth'];
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err)
+        }
+        User.findById(userID).then((user) => {
+          let tokens = user.tokens[0]
+          expect(user._id.toHexString()).toBe(userID);
+          expect(tokens.token).toBe(token);
+          expect(tokens.access).toBe('auth');
+          done();
+        }).catch((error) =>{
+          return done(error);
+        });
       });
   });
 });
