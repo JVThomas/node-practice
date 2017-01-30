@@ -93,7 +93,7 @@ app.patch('/todos/:id', (req,res) => {
   //this operates like the MongoDB driver version, though with minor changes
   Todo.findByIdAndUpdate(id, {$set:body}, {new: true}).then((todo) => {
     if(!todo){
-      return res.status(404).send('ID does not exist');
+      return res.status(400).send('ID does not exist');
     }
     res.send({todo});
   }).catch((e) => {
@@ -116,6 +116,17 @@ app.post('/users', (req, res) => {
 
 app.get('/users/me', authenticate, (req, res) => {
   res.send(req.user);
+});
+
+app.post('/users/login', (req, res) => {
+  let body = _.pick(req.body, ['email', 'password']);
+  User.findByCredentials(body.email, body.password).then((user) => {
+    if (!user) {
+      res.status(400).send('User email/password is incorrect');
+    }
+    res.send(user);
+  }).catch(e => res.send(400).send(e));
+
 });
 
 app.listen(port, () => console.log(`Started on port ${port}`));
