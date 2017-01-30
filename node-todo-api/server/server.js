@@ -120,12 +120,15 @@ app.get('/users/me', authenticate, (req, res) => {
 
 app.post('/users/login', (req, res) => {
   let body = _.pick(req.body, ['email', 'password']);
+
   User.findByCredentials(body.email, body.password).then((user) => {
     if (!user) {
       res.status(400).send('User email/password is incorrect');
     }
-    res.send(user);
-  }).catch(e => res.send(400).send(e));
+    user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send(user);
+    });
+  }).catch(e => res.status(400).send(e));
 
 });
 
