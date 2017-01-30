@@ -267,7 +267,6 @@ describe('POST /users', function() {
       .expect((res) => {
         expect(res.body.email).toBe('testing@test.com');
         userID = res.body._id;
-        console.log(res.header);
         token = res.header['x-auth'];
       })
       .end((err, res) => {
@@ -283,6 +282,34 @@ describe('POST /users', function() {
         }).catch((error) =>{
           return done(error);
         });
+      });
+  });
+
+  it('returns a 400 if email is not provided', function(done) {
+    request(app)
+      .post('/users')
+      .send({password})
+      .expect(400)
+      .end((error, res) => {
+        if(error) {
+          return done(error)
+        }
+        expect(res.text).toNotBe(null);
+        done();
+      });
+  });
+
+  it('returns a 400 if password is not provided', function(done) {
+    request(app)
+      .post('/users')
+      .send({email})
+      .expect(400)
+      .end((error, res) => {
+        if (error) {
+          return done(error);
+        }
+        expect(res.text).toNotBe(null);
+        done();
       });
   });
 });
