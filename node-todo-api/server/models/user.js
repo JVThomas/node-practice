@@ -55,12 +55,12 @@ UserSchema.methods.generateAuthToken = function () {
 //statics keyword used to denote model method
 UserSchema.statics.findByToken = function(token) {
   let User = this;
-  let decoded;
-
+  let decoded = {};
   //used try-catch block to catch errors thrown by jwt library
   try {
     decoded = jwt.verify(token,process.env.TODO_SECRET);
   } catch (e) {
+    debugger;
     return Promise.reject();
   }
 

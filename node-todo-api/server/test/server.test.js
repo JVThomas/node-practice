@@ -313,3 +313,32 @@ describe('POST /users', function() {
       });
   });
 });
+
+describe('GET /users/me', function() {
+  it('should return user data if authenticated', function(done) {
+    request(app)
+      .get('/users/me')
+      .set('x-auth', users[0].tokens[0].token)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body._id).toBe(users[0]._id.toHexString());
+        expect(res.body.email).toBe(users[0].email);
+        done();
+      })
+      .catch((e) => done(e));
+  });
+
+  it('should return 401 if not authenticated', function(done) {
+    request(app)
+      .get('/users/me')
+      .set('x-auth', 'dskfjdkj3kj')
+      .expect(401)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        expect(res.text).toBe('Invalid Authorization');
+        done();
+      });
+  });
+});
