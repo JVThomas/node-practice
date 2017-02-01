@@ -312,6 +312,20 @@ describe('POST /users', function() {
         done();
       });
   });
+
+  it('returns a 400 if email and password are not provided', function(done) {
+    request(app)
+      .post('/users')
+      .send({})
+      .expect(400)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+        expect(res.text).toNotBe(null);
+        done();
+      });
+  });
 });
 
 describe('GET /users/me', function() {

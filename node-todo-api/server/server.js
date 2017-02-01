@@ -93,7 +93,7 @@ app.patch('/todos/:id', (req,res) => {
   //this operates like the MongoDB driver version, though with minor changes
   Todo.findByIdAndUpdate(id, {$set:body}, {new: true}).then((todo) => {
     if(!todo){
-      return res.status(400).send('ID does not exist');
+      return res.status(404).send('ID does not exist');
     }
     res.send({todo});
   }).catch((e) => {
