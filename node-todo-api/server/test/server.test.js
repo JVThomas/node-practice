@@ -356,3 +356,35 @@ describe('GET /users/me', function() {
       });
   });
 });
+
+describe('/users/logout', function() {
+  it('logouts the user and deletes token used from user instance', function(done) {
+    request(app)
+      .delete('/users/logout')
+      .set('x-auth', users[0].tokens[0].token)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.status).toBe("OK");
+        User.findById(users[0]._id).then((user) => {
+          expect(user.tokens.length).toBe(0);
+        });
+        done();
+      }).catch(e => done(e));
+  });
+
+  it('fails to logout with invalid token argument', function(done) {
+    request(app)
+      .delete('/users/logout')
+      .expect(401)
+      .end((err,res) => {
+        if(err) {
+          return done(err);
+        }
+        expect(res.text).toBe('Invalid Authorization');
+        User.findById(users[0]._id).then((user) => {
+          expect(user.tokens.length).toBe(1);
+        })
+        done();
+      });
+  });
+});
