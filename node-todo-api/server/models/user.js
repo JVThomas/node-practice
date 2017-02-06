@@ -76,7 +76,7 @@ UserSchema.statics.findByCredentials = function (email,password) {
 
   return User.findOne({email}).then((user) => {
     if (!user) {
-      return Promise.reject('Email/Password Incorrect');
+      return Promise.reject('User not found');
     }
     return new Promise ((resolve, reject) => {
       bcrypt.compare(password, user.password, (err, res) => {
@@ -108,6 +108,19 @@ UserSchema.pre('save', function(next){
     next();
   }
 });
+
+UserSchema.methods.removeToken = function(token) {
+  let user = this;
+  return user.update({
+    //pull will remove the entire token object, not just the property, from object
+    //one less item in the array
+    $pull:{
+      tokens:{
+        token
+      }
+    }
+  });
+}
 
 let User = mongoose.model('User', UserSchema);
 

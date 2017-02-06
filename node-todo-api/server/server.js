@@ -129,7 +129,12 @@ app.post('/users/login', (req, res) => {
       res.header('x-auth', token).send(user);
     });
   }).catch(e => res.status(400).send(e));
+});
 
+app.delete('/users/logout', authenticate, (req, res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }).catch(error => res.status(400).send(error));
 });
 
 app.listen(port, () => console.log(`Started on port ${port}`));
