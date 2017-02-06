@@ -357,10 +357,10 @@ describe('GET /users/me', function() {
   });
 });
 
-describe('/users/logout', function() {
+describe('/users/me/logout', function() {
   it('logouts the user and deletes token used from user instance', function(done) {
     request(app)
-      .delete('/users/logout')
+      .delete('/users/me/logout')
       .set('x-auth', users[0].tokens[0].token)
       .expect(200)
       .expect((res) => {
@@ -374,7 +374,7 @@ describe('/users/logout', function() {
 
   it('fails to logout with invalid token argument', function(done) {
     request(app)
-      .delete('/users/logout')
+      .delete('/users/me/logout')
       .expect(401)
       .end((err,res) => {
         if(err) {
