@@ -19,6 +19,7 @@ describe('POST /todos', function() {
     //define route
       .post('/todos')
       //set the data to send
+      .set('x-auth', users[0].tokens[0].token)
       .send({text})
       //check status
       .expect(200)
@@ -30,9 +31,9 @@ describe('POST /todos', function() {
         if (err){
           return done(err);
         } else {
-          Todo.find().then((todos) => {
-            expect(todos.length).toBe(4);
-            expect(todos[3].text).toBe(text);
+          Todo.find({_creator: users[0]._id}).then((todos) => {
+            expect(todos.length).toBe(2);
+            expect(todos[1].text).toBe(text);
             done();
           //we need a catch in case the above expect statements fail
           }).catch((error) => {
@@ -45,6 +46,7 @@ describe('POST /todos', function() {
   it('does not save a todo with invalid body data', function(done) {
     request(app)
       .post('/todos')
+      .set('x-auth', users[0].tokens[0].token)
       .send({})
       .expect(400)
       .end((err, res) => {
@@ -64,9 +66,10 @@ describe('GET /todos', function() {
   it('gets all todos saved in db', function(done) {
     request(app)
       .get('/todos')
+      .set('x-auth', users[0].tokens[0].token)
       .expect(200)
       .expect((res) => {
-        expect(res.body.todos.length).toBe(3)
+        expect(res.body.todos.length).toBe(1)
       })
       //here we only pass done to end since we are not doing any async tasks
       .end(done);
